@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import io from 'socket.io-client';
 import axios from 'axios';
@@ -26,6 +26,65 @@ const ChatArea = ({ selectedChat, chatType, currentUser, onNewMessage, onMarkRea
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  // Define markMessagesAsRead first since fetchMessages uses it
+  const markMessagesAsRead = useCallback(async (messageIds) => {
+    if (!socket || !selectedChat) return;
+
+    try {
+      socket.emit('mark_read', {
+        messageIds,
+        chatType,
+        recipientId: chatType === 'private' ? selectedChat._id._id : undefined,
+        groupId: chatType === 'group' ? selectedChat._id : undefined
+      });
+
+      // Update local state
+      setMessages(prev => prev.map(msg => 
+        messageIds.includes(msg._id) ? { ...msg, isRead: true } : msg
+      ));
+
+      // Update conversation unread count
+      onMarkRead(chatType === 'private' ? selectedChat._id._id : selectedChat._id, chatType);
+    } catch (error) {
+      console.error('Error marking messages as read:', error);
+    }
+  }, [socket, selectedChat, chatType, onMarkRead]);
+
+  // Define fetchMessages after markMessagesAsRead
+  const fetchMessages = useCallback(async () => {
+    if (!selectedChat) return;
+
+    try {
+      setLoading(true);
+      let response;
+      
+      if (chatType === 'private') {
+        response = await axios.get(`/api/chat/messages/${selectedChat._id._id}`);
+      } else {
+        response = await axios.get(`/api/chat/group/${selectedChat._id}`);
+      }
+      
+      setMessages(response.data);
+      
+      // Mark messages as read
+      if (response.data.length > 0) {
+        const unreadMessages = response.data.filter(msg => 
+          msg.sender._id !== currentUser._id && !msg.isRead
+        );
+        
+        if (unreadMessages.length > 0) {
+          const messageIds = unreadMessages.map(msg => msg._id);
+          markMessagesAsRead(messageIds);
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching messages:', error);
+      setError('Failed to load messages');
+    } finally {
+      setLoading(false);
+    }
+  }, [selectedChat, chatType, currentUser._id, markMessagesAsRead]);
 
   // Initialize Socket.IO connection
   useEffect(() => {
@@ -93,64 +152,7 @@ const ChatArea = ({ selectedChat, chatType, currentUser, onNewMessage, onMarkRea
       setMessages([]);
       setTypingUsers([]);
     }
-  }, [selectedChat, chatType]);
-
-  const fetchMessages = async () => {
-    if (!selectedChat) return;
-
-    try {
-      setLoading(true);
-      let response;
-      
-      if (chatType === 'private') {
-        response = await axios.get(`/api/chat/messages/${selectedChat._id._id}`);
-      } else {
-        response = await axios.get(`/api/chat/group/${selectedChat._id}`);
-      }
-      
-      setMessages(response.data);
-      
-      // Mark messages as read
-      if (response.data.length > 0) {
-        const unreadMessages = response.data.filter(msg => 
-          msg.sender._id !== currentUser._id && !msg.isRead
-        );
-        
-        if (unreadMessages.length > 0) {
-          const messageIds = unreadMessages.map(msg => msg._id);
-          markMessagesAsRead(messageIds);
-        }
-      }
-    } catch (error) {
-      console.error('Error fetching messages:', error);
-      setError('Failed to load messages');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const markMessagesAsRead = async (messageIds) => {
-    if (!socket || !selectedChat) return;
-
-    try {
-      socket.emit('mark_read', {
-        messageIds,
-        chatType,
-        recipientId: chatType === 'private' ? selectedChat._id._id : undefined,
-        groupId: chatType === 'group' ? selectedChat._id : undefined
-      });
-
-      // Update local state
-      setMessages(prev => prev.map(msg => 
-        messageIds.includes(msg._id) ? { ...msg, isRead: true } : msg
-      ));
-
-      // Update conversation unread count
-      onMarkRead(chatType === 'private' ? selectedChat._id._id : selectedChat._id, chatType);
-    } catch (error) {
-      console.error('Error marking messages as read:', error);
-    }
-  };
+  }, [selectedChat, chatType, fetchMessages]);
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
@@ -223,7 +225,7 @@ const ChatArea = ({ selectedChat, chatType, currentUser, onNewMessage, onMarkRea
     return (
       <div className="chat-area-empty">
         <div className="empty-state">
-          <h2>Welcome to Chat App!</h2>
+          <h2>Welcome to CLICK!</h2>
           <p>Select a conversation or user to start chatting</p>
         </div>
       </div>

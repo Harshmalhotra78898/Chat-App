@@ -17,9 +17,10 @@ function createWindow() {
       enableRemoteModule: false,
       preload: path.join(__dirname, 'preload.js')
     },
-    icon: path.join(__dirname, '../assets/icon.png'),
+    icon: path.join(__dirname, '../assets/icon.ico'),
     titleBarStyle: 'default',
-    show: false
+    show: false,
+    title: 'CLICK - Chat App'
   });
 
   // Load the app
@@ -67,7 +68,7 @@ app.whenReady().then(() => {
         },
         { type: 'separator' },
         {
-          label: 'Quit',
+          label: 'Quit CLICK',
           accelerator: process.platform === 'darwin' ? 'Cmd+Q' : 'Ctrl+Q',
           click: () => {
             app.quit();
@@ -106,6 +107,17 @@ app.whenReady().then(() => {
         { role: 'minimize' },
         { role: 'close' }
       ]
+    },
+    {
+      label: 'Help',
+      submenu: [
+        {
+          label: 'About CLICK',
+          click: () => {
+            mainWindow.webContents.send('show-about');
+          }
+        }
+      ]
     }
   ];
 
@@ -134,6 +146,6 @@ app.on('before-quit', () => {
 // Security: Prevent new window creation
 app.on('web-contents-created', (event, contents) => {
   contents.on('new-window', (event, navigationUrl) => {
-    event.preventDefault();
+    return { action: 'deny' };
   });
 });

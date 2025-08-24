@@ -1,18 +1,18 @@
 {
-  "name": "mern-chat-app",
+  "name": "click-chat-app",
   "version": "1.0.0",
-  "description": "Real-time chat application with MERN stack",
+  "description": "CLICK - Real-time chat application with MERN stack",
   "main": "electron/main.js",
   "scripts": {
     "start": "concurrently \"npm run server\" \"npm run client\"",
     "server": "cd backend && npm run dev",
     "client": "cd frontend && npm start",
     "build": "cd frontend && npm run build",
-    "vercel-build": "cd frontend && npm install && npm run build",
     "electron": "electron .",
     "electron-dev": "concurrently \"npm run server\" \"npm run client\" \"npm run electron\"",
     "electron-pack": "npm run build && electron-builder",
-    "dist": "npm run build && electron-builder --publish=never"
+    "dist": "npm run build && electron-builder --publish=never",
+    "build-win": "npm run build && electron-builder --win --publish=never"
   },
   "dependencies": {
     "concurrently": "^8.2.0"
@@ -22,8 +22,8 @@
     "electron-builder": "^24.6.0"
   },
   "build": {
-    "appId": "com.chatapp.desktop",
-    "productName": "Chat App",
+    "appId": "com.click.chatapp",
+    "productName": "CLICK",
     "directories": {
       "output": "dist"
     },
@@ -45,9 +45,16 @@
     "linux": {
       "target": "AppImage",
       "icon": "assets/icon.png"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "CLICK Chat App"
     }
   },
-  "keywords": ["chat", "mern", "electron", "desktop"],
+  "keywords": ["click", "chat", "mern", "electron", "desktop"],
   "author": "Your Name",
   "license": "MIT"
 }

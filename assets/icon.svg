@@ -1,0 +1,28 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background Circle -->
+  <circle cx="256" cy="256" r="240" fill="#4F46E5" stroke="#3730A3" stroke-width="8"/>
+  
+  <!-- Chat Bubble -->
+  <path d="M120 180 Q120 160 140 160 L320 160 Q340 160 340 180 L340 280 Q340 300 320 300 L200 300 L160 340 L160 300 Q140 300 120 280 Z" fill="white"/>
+  
+  <!-- Message Lines -->
+  <rect x="140" y="180" width="160" height="8" rx="4" fill="#4F46E5"/>
+  <rect x="140" y="200" width="120" height="8" rx="4" fill="#4F46E5"/>
+  <rect x="140" y="220" width="80" height="8" rx="4" fill="#4F46E5"/>
+  
+  <!-- Click/Connect Dots -->
+  <circle cx="380" cy="180" r="20" fill="#10B981"/>
+  <circle cx="380" cy="220" r="20" fill="#F59E0B"/>
+  <circle cx="380" cy="260" r="20" fill="#EF4444"/>
+  
+  <!-- Connection Lines -->
+  <line x1="360" y1="180" x2="340" y2="200" stroke="white" stroke-width="3"/>
+  <line x1="360" y1="220" x2="340" y2="240" stroke="white" stroke-width="3"/>
+  <line x1="360" y1="260" x2="340" y2="280" stroke="white" stroke-width="3"/>
+  
+  <!-- App Name "CLICK" -->
+  <text x="256" y="420" font-family="Arial, sans-serif" font-size="48" font-weight="bold" text-anchor="middle" fill="white">CLICK</text>
+  
+  <!-- Subtitle -->
+  <text x="256" y="450" font-family="Arial, sans-serif" font-size="20" text-anchor="middle" fill="#E5E7EB">Chat App</text>
+</svg>

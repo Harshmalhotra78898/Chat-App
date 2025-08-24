@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import ConversationItem from './ConversationItem';
 import UserList from './UserList';
@@ -18,19 +18,8 @@ const Sidebar = ({
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // Fetch conversations on component mount
-  useEffect(() => {
-    fetchConversations();
-  }, []);
-
-  // Fetch users when switching to users tab
-  useEffect(() => {
-    if (activeTab === 'users') {
-      fetchUsers();
-    }
-  }, [activeTab]);
-
-  const fetchConversations = async () => {
+  // Define functions first to avoid hoisting issues
+  const fetchConversations = useCallback(async () => {
     try {
       setLoading(true);
       const response = await axios.get('/api/chat/conversations');
@@ -40,9 +29,9 @@ const Sidebar = ({
     } finally {
       setLoading(false);
     }
-  };
+  }, [updateConversations]);
 
-  const fetchUsers = async () => {
+  const fetchUsers = useCallback(async () => {
     try {
       const response = await axios.get('/api/users', {
         params: { search: searchTerm }
@@ -51,7 +40,19 @@ const Sidebar = ({
     } catch (error) {
       console.error('Error fetching users:', error);
     }
-  };
+  }, [searchTerm]);
+
+  // Fetch conversations on component mount
+  useEffect(() => {
+    fetchConversations();
+  }, [fetchConversations]);
+
+  // Fetch users when switching to users tab
+  useEffect(() => {
+    if (activeTab === 'users') {
+      fetchUsers();
+    }
+  }, [activeTab, fetchUsers]);
 
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);

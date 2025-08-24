@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import Sidebar from './Sidebar';
 import ChatArea from './ChatArea';
@@ -9,7 +9,6 @@ const Chat = () => {
   const [selectedChat, setSelectedChat] = useState(null);
   const [chatType, setChatType] = useState('private'); // 'private' or 'group'
   const [conversations, setConversations] = useState({ private: [], groups: [] });
-  const [loading, setLoading] = useState(true);
 
   const handleChatSelect = (chat, type) => {
     setSelectedChat(chat);
@@ -86,7 +85,7 @@ const Chat = () => {
     <div className="chat-container">
       <div className="chat-header">
         <div className="chat-header-left">
-          <h1>Chat App</h1>
+          <h1>CLICK - Chat App</h1>
         </div>
         <div className="chat-header-right">
           <div className="user-info">
